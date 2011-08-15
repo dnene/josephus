@@ -1,20 +1,22 @@
-(defn shout [start nth coll acc]
-        (if (and (== 1 (count coll)) (== 0 (count acc)))
-            (first coll)
-            (if (== (count coll) 0) 
-                (recur start nth (reverse acc) ())
-                (if (== 1 start)
-                    (recur (inc start) nth (rest coll) acc)
-                    (recur (if (== start nth) 1 (inc start)) nth (rest coll) (conj acc (first coll)))))))
+(defn vec-range [start end]
+  (loop [start start r (transient [])]
+    (if (= start end)
+      (persistent! r)
+      (recur (inc start) (conj! r start)))))
+
+(defn shout [people n counter]
+  (cond
+   (= (count people) 1) (nth people 0)
+   (zero? counter) (recur (subvec people 1) n (inc counter))
+   :else (let [counter (if (= counter (dec n)) 0 (inc counter))]
+           (recur (conj (subvec people 1) (nth people 0)) n counter))))
 
 (defn josephus [people nth]
-  (shout 1 nth (range 1 (inc people)) ()))
+  (shout (vec-range 1 (inc people)) nth 0))
 
 (defn countdown [iterations] 
-  (josephus 40 3)
-  (if (== 0 iterations)
-    0
-    (recur (dec iterations))))
+  (dotimes [_ iterations]
+  (josephus 40 3)))
 
 (println (josephus 40 3))
 (countdown 100000)
@@ -22,4 +24,3 @@
     (countdown iterations)
     (let [end (System/currentTimeMillis)]
         (println (/ (* (- end start) 1000.00) iterations) " microseconds")))
-
