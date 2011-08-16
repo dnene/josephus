@@ -1,5 +1,6 @@
 -module(josephus).
--export([benchmark/0,shout/2]).
+-export([benchmark/0]).
+-compile(native).
 
 shout(Count,Nth) ->
     shoutList(lists:seq(1,Count),Nth,1).
@@ -12,7 +13,7 @@ shoutList(List,N,Counter) ->
 shoutSubList([],_,Counter,Acc) -> {lists:reverse(Acc),Counter};
 shoutSubList([_Head|Tail], N, 1, Acc) -> shoutSubList(Tail, N, 2, Acc);
 shoutSubList([Head|Tail], N, Counter,Acc) ->
-    NextCounter = 
+    NextCounter =
         if
             Counter =:= N -> 1;
             true -> Counter + 1
@@ -29,7 +30,7 @@ iter(N) ->
 benchmark() ->
     Iter = 1000000,
     iter(Iter),
-    Start = now(),
+    Start = os:timestamp(),
     iter(Iter),
-    End = now(),
+    End = os:timestamp(),
     io:format("Time is ~w microseconds per iteration (list reduction)~n",[timer:now_diff(End,Start) / Iter]).

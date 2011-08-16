@@ -1,11 +1,12 @@
 -module(josephus).
--export([benchmark/0,shout/2]).
+-export([benchmark/0]).
+-compile(native).
 
 shout(Count,Nth) ->
     shout(lists:seq(1,Count),[],Nth,1).
 
 shout([Head | []], [], _, _) -> Head;
-shout([], Survivors, Nth, Counter) -> 
+shout([], Survivors, Nth, Counter) ->
     %% io:format("Reversing~n",[]),
     shout(lists:reverse(Survivors),[], Nth, Counter);
 shout([Head | Tail], Survivors, Nth, 1) ->
@@ -27,7 +28,7 @@ iter(N) ->
 benchmark() ->
     Iter = 1000000,
     iter(Iter),
-    Start = now(),
+    Start = os:timestamp(),
     iter(Iter),
-    End = now(),
+    End = os:timestamp(),
     io:format("Time is ~w microseconds per iteration (element recursive)~n",[timer:now_diff(End,Start) / Iter]).
