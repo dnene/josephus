@@ -1,13 +1,23 @@
-(defn shout [counter nth coll]
-    (if (empty? (rest coll))
+(defn shout
+  ([nth coll] (let [to-kill (dec nth)] (shout to-kill to-kill coll)))
+  ([counter to-kill coll]
+      (if (empty? (rest coll))
         (first coll)
-        (shout
-            (rem (+ counter (count coll)) nth)
-            nth
-            (keep-indexed #(if(not= 0 (rem (+ %1 counter) nth)) %2) coll))))
+        (let [[next-counter next-coll]
+              (loop [current-idx counter
+                     to-process coll
+                     res []]
+                (if (empty? to-process)
+                  [current-idx res]
+                  (if (== current-idx to-kill)
+                    (recur 0 (rest to-process) res)
+                    (recur (unchecked-inc current-idx)
+                           (rest to-process)
+                           (conj res (first to-process))))))]
+          (recur next-counter to-kill next-coll)))))
 
 (defn josephus [people nth]
-  (shout 0 nth (range 1 (inc people))))
+  (shout nth (range 1 (inc people))))
 
 ;(defn countdown [iterations]
 ; (dotimes [_ iterations]
