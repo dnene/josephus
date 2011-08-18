@@ -1,5 +1,5 @@
 (defn shout [counter nth coll]
-    (if (== (count coll) 1)
+    (if (empty? (rest coll))
         (first coll)
         (shout
             (rem (+ counter (count coll)) nth)
