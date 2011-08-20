@@ -1,88 +1,111 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 
 public class Chain {
-	private int count;
-	private int nth;
-	public Chain(int count, int nth) {
-		this.count = count;
-		this.nth = nth;
-	}
-	
-	public int shout() {
-		List<Integer> people = new ArrayList<Integer>();
-		for (int i = 0 ; i < this.count ; i++) {
-			people.add(i+1);
-		}
-		int counter = 0;
-		while(people.size() > 1) {
-			List<Integer> newPeople = new ArrayList<Integer>();
-			for(int i = 0 ; i < people.size() ; i++) {
-				if ((counter + i) % this.nth != 0) {
-					newPeople.add(people.get(i));
-				}
-			}
-			counter = ((counter + people.size()) % this.nth);
-			people = newPeople;
-		}
-		return people.get(0);
-	}
-	
-	public int shoutRecursive() {
-		List<Integer> people = new LinkedList<Integer>();
-		for (int i = 0 ; i < this.count ; i++) {
-			people.add(i+1);
-		}
-		return shoutRecursive(people, new LinkedList<Integer>(), this.nth, 0);
-	}
-	
-	public int shoutRecursive(List<Integer> people, List<Integer> survivors, int nth, int counter) {
-		if ((survivors.size() == 0) && (people.size() == 1)) {
-			return people.get(0);
-		} else if (people.size() == 0){
-			return shoutRecursive(survivors, new LinkedList<Integer>(), nth, counter);
-		} else {
-			int v = people.remove(0);
-			if (counter != 0) {
-				survivors.add(v);
-			}
-			if (counter == nth - 1) counter = 0;
-			else counter = counter + 1;
-			return shoutRecursive(people, survivors, nth, counter);
-		}
-	}
-	
-	public static void main(String[] args) {
-		Chain chain = new Chain(40,3);
-        System.out.println(chain.shoutRecursive());
-        int ITER = 1000000;
-        for (int i = 0 ; i < ITER ; i++)
-        {
-            chain.shoutRecursive();
-        }
-        long start = System.nanoTime();
-        for (int i = 0 ; i < ITER ; i++)
-        {
-            chain.shoutRecursive();
-        }
-        long end = System.nanoTime();
-        System.out.println("Time per iteration (element recursive) = " + ((end - start) / (ITER )) + " nanoseconds.");
 
-        System.out.println(chain.shout());
-		
-        for (int i = 0 ; i < ITER ; i++)
+   private static int[] soldiers(int n) 
+   {
+      int[] a = new int[n];
+      for (int i = 0 ; i < a.length ; i++) a[i] = i+1;
+      return a;
+   }
+
+   public static int countoffSoldiersReduction(int n, int kth) 
+   {
+      int[] s = soldiers(n);
+      int[] survivors = new int[n];
+      int[] swap; 
+      int k = 0, count = n;
+
+      while (count > 1) {
+         int m = 0;
+
+         for (int i = 0 ; i < count; i++)
+            if (i != k) {
+               survivors[m++] = s[i];
+
+            } else {
+               k += kth;
+            }
+
+         k -= count; // wrap around
+
+         swap = s; s = survivors; survivors = swap; 
+         count = m;
+      }
+
+      return s[0];
+   }
+    public static int countoffSoldiersRecursion(int n, int kth) 
+    {
+        LinkedList<Integer> soldiers = new LinkedList<Integer>();
+        for (int i = 0; i < n; i++) soldiers.add( new Integer(i+1) );
+        
+        return countoff( soldiers.listIterator(0), soldiers, kth, kth ); 
+    }
+
+
+    private static int countoff(
+        ListIterator<Integer> ring, LinkedList<Integer> reset, int kth, int k ) 
+    { 
+        if (ring.hasNext())
         {
-            chain.shout();
+            ring.next();
+
+            if (k != kth) {
+                return countoff(ring, reset, kth, ++k); 
+
+            } else {
+                ring.remove();
+                return countoff(ring, reset, kth, 1); 
+            }
+
+        } else {
+
+            if (ring.nextIndex() > 1)
+
+            // the only way to reset an iterator is to create a new one from the list
+                return countoff(reset.listIterator(0), reset, kth, k);
+
+            else
+                return ring.previous().intValue();
         }
-        start = System.nanoTime();
-        for (int i = 0 ; i < ITER ; i++)
-        {
-            chain.shout();
+    }
+
+    public static void runIterationsReduction(int iterations, int times) {
+        for(int t = 0 ; t < times; t++) {
+            System.gc();
+            long start = System.nanoTime();
+            for(int i = 0; i < iterations ; i++) {
+                countoffSoldiersReduction(40,3);
+            }
+            long end = System.nanoTime();
+            System.out.println(((end - start) * 1.0)/ (iterations * 1000 ));
         }
-        end = System.nanoTime();
-        System.out.println("Time per iteration (list reduction) = " + ((end - start) / (ITER )) + " nanoseconds.");
-		
-	}
+    }
+
+    public static void runIterationsRecursive(int iterations, int times) {
+        for(int t = 0 ; t < times; t++) {
+            System.gc();
+            long start = System.nanoTime();
+            for(int i = 0; i < iterations ; i++) {
+                countoffSoldiersRecursion(40,3);
+            }
+            long end = System.nanoTime();
+            System.out.println(((end - start) * 1.0)/ (iterations * 1000 ));
+        }
+    }
+
+    public static void main(String[] args) {
+        int ITER = 1000000;
+        System.out.println("List Reduction");
+        System.out.println(countoffSoldiersReduction(40,3));
+        runIterationsReduction(ITER,10);
+        System.out.println("Element Recursion");
+        System.out.println(countoffSoldiersRecursion(40,3) );
+        runIterationsRecursive(ITER,10);
+    }
 }

@@ -15,11 +15,16 @@ def findlast(chain,nth,counter) :
         chain.append(head)
         return findlast(chain,nth,1 if counter == nth else counter + 1)
 
-print find()
 import time
-ITER = 100000
-start = time.time()
-for i in range(ITER):
-    find()
-end = time.time()
-print 'Time per iteration = %s microseconds (element recursive)' % ((end - start) * 1000000 / ITER)
+def run_iterations(iterations, times) :
+    print '(element recursive)' 
+    for t in range(times) :
+        start = time.time()
+        for i in range(iterations) :
+            find()
+        end = time.time()
+        print ((end - start) * 1000000 / iterations)
+
+print find()
+ITER = 1000000
+run_iterations(ITER,10)

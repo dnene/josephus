@@ -56,19 +56,31 @@
         }
     }
 
+/*
     def main(args)
     {
         println "Starting"
         def ITER = 100000
+        runIterations(ITER)
         def start = System.nanoTime()
-        for(def i = 0 ; i < ITER ; i++)
-        {
-            def chain = new Chain()
-            chain.init(40)
-            chain.kill(3)
-        }
+        runIterations(ITER)
         def end = System.nanoTime()
         println "Total time = " + ((end - start)/(ITER * 1000)) + " microseconds"
+    }
+*/
+
+    def runIterations(iterations, times) {
+        for(def i = 0 ; i < times ; i++) {
+            System.gc()
+            def start = System.nanoTime()
+            for(def j = 0 ; j < iterations ; j++) {
+                def chain = new Chain()
+                chain.init(40)
+                chain.kill(3)
+            }
+            def end = System.nanoTime()
+            println "Time per iteration = " + ((end - start)/(iterations * 1000)) + " microseconds"
+        }
     }
 
     def chain = new Chain()
@@ -76,17 +88,5 @@
     chain.kill(3)
     println(chain.first.count)
 
-    def ITER = 100000
-    for(def i = 0 ; i < ITER ; i++) {
-        chain = new Chain()
-        chain.init(40)
-        chain.kill(3)
-    }
-    def start = System.nanoTime()
-    for(def i = 0 ; i < ITER ; i++) {
-        chain = new Chain()
-        chain.init(40)
-        chain.kill(3)
-    }
-    def end = System.nanoTime()
-    println "Time per iteration = " + ((end - start)/(ITER * 1000)) + " microseconds"
+    def ITER = 1000000
+    runIterations(ITER,10)

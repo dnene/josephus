@@ -32,13 +32,19 @@ function josephus(size, nth) {
     people = array_init(size)
     return shout(people, nth, 0);
 }
+
+function run_iterations(iterations, times) {
+    for (var t = 0 ; t < times ; t++) {
+        var start = new Date()
+        for(var i = 0 ; i < iterations ; i++) {
+            josephus(40,3)
+        }
+        var end = new Date()
+        print ((end.getTime() - start.getTime()) * 1000 / ITERS)
+    }
+}
+
 print(josephus(40,3))
 ITERS = 1000000
-for(var i = 0 ; i < ITERS ; i++)
-    josephus(40,3)
-var start = new Date()
-for(var i = 0 ; i < ITERS ; i++)
-    josephus(40,3)
-var end = new Date()
-var tmp = new Date()
-print ("Time taken :" + (end.getTime() - start.getTime()) * 1000 / ITERS + " microseconds (element recursion)")
+print ("element recursion")
+run_iterations(ITERS,10)

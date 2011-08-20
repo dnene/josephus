@@ -37,17 +37,18 @@ class Chain(object):
         return current
 
 import time
+def run_iterations(iterations, times) :
+    print '(oo)' 
+    for t in range(times) :
+        start = time.time()
+        for i in range(iterations) :
+            chain = Chain(40)
+            chain.kill(3)
+        end = time.time()
+        print ((end - start) * 1000000 / iterations)
+
 chain = Chain(40)
 chain.kill(3)
 print chain.first
-ITER = 100000
-for i in range(ITER):
-    chain = Chain(40)
-    chain.kill(3)
-start = time.time()
-for i in range(ITER):
-    chain = Chain(40)
-    chain.kill(3)
-end = time.time()
-print 'Time per iteration = %s microseconds (oo)' % ((end - start) * 1000000 / ITER)
-
+ITER = 1000000
+run_iterations(ITER,10)

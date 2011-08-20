@@ -20,17 +20,20 @@ shoutSubList([Head|Tail], N, Counter,Acc) ->
         end,
     shoutSubList(Tail,N, NextCounter, [Head | Acc]).
 
+run_iterations(0) -> ok;
+run_iterations(Iterations) ->
+    shout(40,3),
+    run_iterations(Iterations - 1).
 
-iter(0) -> ok;
-iter(N) ->
-    Result = shout(40,3),
-    %% io:format("~w ~w~n",[N,Result]),
-    iter(N-1).
+run_times(_,0) -> ok;
+run_times(Iterations, Times) ->
+    Start = os:timestamp(),
+    run_iterations(Iterations),
+    End = os:timestamp(),
+    io:format("~w~n",[timer:now_diff(End,Start) / Iterations]),
+    run_times(Iterations,Times-1).
 
 benchmark() ->
     Iter = 1000000,
-    iter(Iter),
-    Start = os:timestamp(),
-    iter(Iter),
-    End = os:timestamp(),
-    io:format("Time is ~w microseconds per iteration (list reduction)~n",[timer:now_diff(End,Start) / Iter]).
+    io:format("(list reduction)~n",[]),
+    run_times(Iter,10).

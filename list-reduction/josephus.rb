@@ -23,13 +23,13 @@ end
 
 j = Josephus.new(40,3)
 puts j.shout()
-ITER=100000
-ITER.times { |i|
-    j.shout()
+TIMES=10
+ITER=1000000
+TIMES.times { |i|
+    start = Time.now
+    ITER.times { |k|
+        j.shout()
+    }
+    ends = Time.now
+    puts ((ends - start) * 1000000 / ITER).to_s()
 }
-start = Time.now
-ITER.times { |i|
-    j.shout()
-}
-ends = Time.now
-puts 'Time per iteration = ' + ((ends - start) * 1000000 / ITER).to_s() + " microseconds"

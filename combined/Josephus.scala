@@ -53,49 +53,35 @@ class Chain(val count: Int) {
 object Josephus{
   import ExtraControls.loop
 
-  def timeit(tag: String)(f: => Unit): Unit = {
-    val iters = 1000000
-    var start = System.currentTimeMillis()
-    loop(1, iters) { _ =>
-        f
-    }
-    var end = System.currentTimeMillis()
-    println((end - start) * 1000.0 / iters + " microseconds ( " + tag + " )")
-  }
-
-  def warmup(f: => Unit): Unit = {
-    loop(1, 100000) { _ =>
-        f
+  def runIterations(tag: String, iterations: Int, times: Int)(f: => Unit): Unit = {
+    println("Running " + tag)
+    loop(1, times) { _ =>
+      System.gc();
+      var start = System.nanoTime()
+      loop(1, iterations) { _ => f }
+      var end = System.nanoTime()
+      println(((end - start) * 1.0) / (iterations * 1000))
     }
   }
 
   def main(args : Array[String]) : Unit = {
+    val ITER = 1000000
     val chain = new Chain(40)
     println(chain.shout(3))
 
-    warmup {
-      val chain = new Chain(40)
-      chain.shout(3)
-    }
-    timeit("oo") {
+    runIterations("oo",ITER,10) {
       val chain = new Chain(40)
       chain.shout(3)
     }
 
-    println(shoutPatternMatch(40, 3))
-    warmup {
-      shoutPatternMatch(40,3)
-    }
-    timeit ("element recursive") {
-      shoutPatternMatch(40,3)
+    println(shoutRecursive(List.range(1, 41),Nil,3,1))
+    runIterations ("element recursive", ITER,10) {
+      shoutRecursive(List.range(1, 41),Nil,3,1)
     }
 
-    println(shoutListProcessing(40,3))
-    warmup {
-      shoutListProcessing(40,3)
-    }
-    timeit ("list reduction"){
-      shoutListProcessing(40,3)
+    println(shoutListProcessing(ArrayBuffer.range(1, 41),3))
+    runIterations ("list reduction", ITER, 10){
+      shoutListProcessing(ArrayBuffer.range(1, 41),3)
     }
   }
 
@@ -114,25 +100,17 @@ object Josephus{
     }
     people(0)
   }
-  
-  def shoutListProcessing(count: Int, nth: Int): Int = {
-    shoutListProcessing(ArrayBuffer.range(1, 41),3)
-  }
 
-  def shoutPatternMatch(soldiers : List[Int], survivors: List[Int], n: Int, counter: Int): Int = {
-    (soldiers, survivors, n, counter) match {
-      case(h :: Nil, Nil, _, _) => h
-      case(Nil, s, _, _) => shoutPatternMatch(s reverse, Nil, n, counter)
-      case(h :: t, s, n, 1) =>
-        shoutPatternMatch(t, s, n, 2)
-      case(h :: t, s, n, c) =>
-        shoutPatternMatch(t, h :: s, n, if(c == n) 1 else c + 1)
+  @scala.annotation.tailrec 
+  final def shoutRecursive(soldiers : List[Int], survivors: List[Int], n: Int, counter: Int): Int = {
+    if (soldiers.isEmpty) shoutRecursive(survivors.reverse, Nil, n, counter)
+    else {
+      if (soldiers.tail.isEmpty && survivors.isEmpty) soldiers.head
+      else
+        if (counter == 1) shoutRecursive(soldiers.tail, survivors, n, 2)
+        else shoutRecursive(soldiers.tail, soldiers.head :: survivors, 
+                            n, if (counter == n) 1 else counter + 1)
     }
   }
-
-  def shoutPatternMatch(count: Int, nth: Int): Int = {
-    shoutPatternMatch(List.range(1, 41),Nil,3,1)
-  }
-
 }
 

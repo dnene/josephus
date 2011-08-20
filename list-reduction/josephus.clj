@@ -9,24 +9,14 @@
 (defn josephus [people nth]
   (shout 0 nth (range 1 (inc people))))
 
-;(defn countdown [iterations]
-; (dotimes [_ iterations]
-;   (josephus 40 3)))
-(defn countdown [iterations] 
-  (josephus 40 3)
-  (if (zero? iterations)
-    0
-    (recur (dec iterations))))
+(defn run-iterations [iterations times]
+  (dotimes [_ times]
+    (let [start (System/nanoTime)]
+        (dotimes[_ iterations] 
+            (josephus 40 3))
+        (let [end (System/nanoTime)]
+            (println (float (/ (- end start) (* 1000 iterations))))))))
 
-; verify
 (println (josephus 40 3))
-
-; warmup
-(countdown 100000)
-
-; measure
-(let [start (System/currentTimeMillis) iterations 100000]
-    (countdown iterations)
-    (let [end (System/currentTimeMillis)]
-        (println (/ (* (- end start) 1000.00) iterations) " microseconds")))
+(run-iterations 1000000 10)
 

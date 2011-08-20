@@ -26,12 +26,15 @@ def find_last(people,acc,nth,count) {
     }
 }
 
+def runIterations(iterations, times) {
+    for(i = 0 ; i < times ; i++) {
+        def start = System.nanoTime()
+        for(def j = 0 ; j < iterations ; j++)
+            find_last()
+        def end = System.nanoTime()
+        println ((end - start)/(iterations * 1000))
+    }
+}
+
 println find_last()
-def ITER = 100000
-for(def i = 0 ; i < ITER ; i++)
-    find_last()
-def start = System.nanoTime()
-for(def i = 0 ; i < ITER ; i++)
-    find_last()
-def end = System.nanoTime()
-println "Time per iteration = " + ((end - start)/(ITER * 1000)) + " microseconds"
+runIterations(1000000,10)

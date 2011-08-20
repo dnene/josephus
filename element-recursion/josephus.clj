@@ -14,13 +14,13 @@
 (defn josephus [people nth]
   (shout (vec-range 1 (inc people)) nth 0))
 
-(defn countdown [iterations] 
-  (dotimes [_ iterations]
-  (josephus 40 3)))
+(defn run-iterations [iterations times]
+  (dotimes [_ times]
+    (let [start (System/nanoTime)]
+        (dotimes[_ iterations] 
+            (josephus 40 3))
+        (let [end (System/nanoTime)]
+            (println (float (/ (- end start) (* 1000 iterations))))))))
 
 (println (josephus 40 3))
-(countdown 100000)
-(let [start (System/currentTimeMillis) iterations 100000]
-    (countdown iterations)
-    (let [end (System/currentTimeMillis)]
-        (println (/ (* (- end start) 1000.00) iterations) " microseconds")))
+(run-iterations 1000000 10)
