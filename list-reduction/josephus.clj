@@ -1,17 +1,26 @@
-(defn shout ^long [counter nth coll]
-  (let [cnt (count coll)]
-    (if (= 1 cnt)
-      (first coll)
-      (shout (rem (+ counter cnt) nth)
-             nth
-             (keep-indexed (fn [index item]
-                             (when-not (zero? (rem (+ index counter)
-                                                   nth))
-                               item))
-                           coll)))))
+(defn shout [^long counter ^long nth [cnt coll]]
+  (if (= 1 cnt)
+    (first coll)
+    (shout (rem (+ counter cnt) nth)
+           nth
+           (loop [index 0
+                  new-count 0
+                  remaining coll
+                  result (transient [])]
+             (if (seq remaining)
+               (if-not (zero? (rem (+ index counter) nth))
+                 (recur (inc index)
+                        (inc new-count)
+                        (rest remaining)
+                        (conj! result (first remaining)))
+                 (recur (inc index)
+                        new-count
+                        (rest remaining)
+                        result))
+               [new-count (persistent! result)])))))
 
 (defn josephus [people nth]
-  (shout 0 nth (into [] (range 1 (inc people)))))
+  (shout 0 nth [people (into [] (range 1 (inc people)))]))
 
 (defn run-iterations [iterations times]
   (dotimes [_ times]
