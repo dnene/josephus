@@ -1,18 +1,35 @@
-(defn vec-range [start end]
-  (loop [start start r (transient [])]
-    (if (= start end)
-      (persistent! r)
-      (recur (inc start) (conj! r start)))))
+;; contributed by Stuart Halloway
+;; This is not idiomatic Clojure, rather, a simple-minded post of the
+;; Java code, in the name of an apples-apples comparison.
 
-(defn shout [people n counter]
-  (cond
-   (= (count people) 1) (nth people 0)
-   (zero? counter) (recur (subvec people 1) n (inc counter))
-   :else (let [counter (if (= counter (dec n)) 0 (inc counter))]
-           (recur (conj (subvec people 1) (nth people 0)) n counter))))
+(import [java.util ArrayList LinkedList List ListIterator])
 
-(defn josephus [people nth]
-  (shout (vec-range 1 (inc people)) nth 0))
+(set! *warn-on-reflection* true)
+
+(defn countoff
+  [^ListIterator ring ^LinkedList reset kth k]
+  (loop [ring ring
+         reset reset
+         kth (int kth)
+         k (int k)]
+    (if (.hasNext ring)
+      (do
+        (.next ring)
+        (if (not= k kth)
+          (recur ring reset kth (inc k))
+          (do
+            (.remove ring)
+            (recur ring reset kth (int 1)))))
+      (if (> (.nextIndex ring) 1)
+        (recur (.listIterator reset (int 0)) reset kth k)
+        (.previous ring)))))
+            
+(defn josephus
+  [n kth]
+  (let [soldiers (LinkedList.)]
+    (dotimes [i n]
+      (.add soldiers (inc i)))
+    (countoff (.listIterator soldiers) soldiers kth kth)))
 
 (defn run-iterations [iterations times]
   (dotimes [_ times]
@@ -23,4 +40,5 @@
             (println (float (/ (- end start) (* 1000 iterations))))))))
 
 (println (josephus 40 3))
-(run-iterations 1000000 10)
+(run-iterations 100000 10)
+
