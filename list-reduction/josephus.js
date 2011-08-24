@@ -1,44 +1,57 @@
-function array_init(size) {
-    people = []
-    for (var i = 0; i < size; i++) {
-        people[i] = i + 1;
-    }
+/*
+$ /usr/local/src/v8/d8 josephus.js
+26
+list reduction array
+1.232
+1.217
+1.217
+1.224
+1.22
+1.227
+1.224
+1.226
+1.219
+1.217
+*/
 
-    return people
+function countoffSoldiers(n,kth) {
+   var soldiers = []
+   for (var i = 0; i < n; i++) soldiers[i] = i+1
+
+   //var k = kth-1, survivedLastRound = n; // standard Josephus problem
+   var k = 0, survivedLastRound = n
+
+   while (survivedLastRound > 1) {
+      var survived = 0
+
+      for (var i = 0 ; i < survivedLastRound; i++)
+         if (i != k) 
+            soldiers[survived++] = soldiers[i]
+         else
+            k += kth
+
+         k -= survivedLastRound // wrap around
+         survivedLastRound = survived
+      }
+
+      return soldiers[0] 
 } 
 
-function shout(people, nth, counter) {
-    new_people = []
-    if (people.length == 1) {
-        return people[0]
-    } else {
-        for (var i = 0 ; i < people.length ; i++) {
-            if ((i + counter) % nth != 0) {
-                new_people.push(people[i])
-            }
-        }
-        counter = (counter + people.length) % nth
-        return shout(new_people, nth, counter)
-    }
-}
 
-function josephus(size, nth) {
-    people = array_init(size)
-    return shout(people, nth, 0);
-}
+//-----------------------------------------------------------------------------
 
 function run_iterations(iterations, times) {
     for (var t = 0 ; t < times ; t++) {
         var start = new Date()
         for(var i = 0 ; i < iterations ; i++) {
-            josephus(40,3)
+            countoffSoldiers(40,3)
         }
         var end = new Date()
         print ((end.getTime() - start.getTime()) * 1000 / ITERS)
     }
 }
 
-print(josephus(40,3))
+print(countoffSoldiers(40,3))
 ITERS = 1000000
-print ("list reduction")
+print ("list reduction array")
 run_iterations(ITERS,10)
