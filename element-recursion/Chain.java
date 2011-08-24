@@ -13,32 +13,6 @@ public class Chain {
       return a;
    }
 
-   public static int countoffSoldiersReduction(int n, int kth) 
-   {
-      int[] s = soldiers(n);
-      int[] survivors = new int[n];
-      int[] swap; 
-      int k = 0, count = n;
-
-      while (count > 1) {
-         int m = 0;
-
-         for (int i = 0 ; i < count; i++)
-            if (i != k) {
-               survivors[m++] = s[i];
-
-            } else {
-               k += kth;
-            }
-
-         k -= count; // wrap around
-
-         swap = s; s = survivors; survivors = swap; 
-         count = m;
-      }
-
-      return s[0];
-   }
     public static int countoffSoldiersRecursion(int n, int kth) 
     {
         LinkedList<Integer> soldiers = new LinkedList<Integer>();
@@ -75,18 +49,6 @@ public class Chain {
         }
     }
 
-    public static void runIterationsReduction(int iterations, int times) {
-        for(int t = 0 ; t < times; t++) {
-            System.gc();
-            long start = System.nanoTime();
-            for(int i = 0; i < iterations ; i++) {
-                countoffSoldiersReduction(40,3);
-            }
-            long end = System.nanoTime();
-            System.out.println(((end - start) * 1.0)/ (iterations * 1000 ));
-        }
-    }
-
     public static void runIterationsRecursive(int iterations, int times) {
         for(int t = 0 ; t < times; t++) {
             System.gc();
@@ -101,9 +63,6 @@ public class Chain {
 
     public static void main(String[] args) {
         int ITER = 1000000;
-        System.out.println("List Reduction");
-        System.out.println(countoffSoldiersReduction(40,3));
-        runIterationsReduction(ITER,10);
         System.out.println("Element Recursion");
         System.out.println(countoffSoldiersRecursion(40,3) );
         runIterationsRecursive(ITER,10);
