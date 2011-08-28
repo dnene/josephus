@@ -17,12 +17,10 @@ class ChainGpp2
             if (shout == 1) {
                 prev.next = next
                 next.prev = prev
-                return 2;
+                return 2
             }
-            else if (shout == nth) {
-                return 1;
-            } else {
-                return shout + 1;
+            else {
+                shout == nth ? 1 : shout + 1
             }
         }
     }
@@ -35,11 +33,13 @@ class ChainGpp2
         for (int i = 0 ; i < size ; i++)
         {
             Person current = [i]
-            if (!first) first = current;
             if (last)
             {
                 last.next = current
                 current.prev = last
+            }
+            else {
+                first = current
             }
             last = current
         }
@@ -62,11 +62,11 @@ class ChainGpp2
 
 def runIterations(int iterations, int times) {
     for (int t = 0 ; t < times ; t++) {
-        System.gc();
-        long start = System.nanoTime();
+        System.gc()
+        def start = System.nanoTime()
         for (int i = 0 ; i < iterations ; i++) {
             ChainGpp2 chain = [40]
-            chain.kill(3);
+            chain.kill(3)
         }
         long end = System.nanoTime();
         System.out.println(((end - start) * 1.0 / (iterations * 1000)));
