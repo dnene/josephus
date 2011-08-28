@@ -9,19 +9,12 @@ class ChainGpp2
 
         Person(int count)
         {
-            this.count = count + 1
+            this.count = count+1
         }
 
-        int shout(int shout, int nth)
-        {
-            if (shout == 1) {
-                prev.next = next
-                next.prev = prev
-                return 2
-            }
-            else {
-                shout == nth ? 1 : shout + 1
-            }
+        void remove() {
+            prev.next = next
+            next.prev = prev
         }
     }
 
@@ -29,18 +22,12 @@ class ChainGpp2
 
     ChainGpp2(int size)
     {
-        Person last
-        for (int i = 0 ; i < size ; i++)
+        Person last = first = [0]
+        for (int i = 1 ; i < size ; i++)
         {
             Person current = [i]
-            if (last)
-            {
-                last.next = current
-                current.prev = last
-            }
-            else {
-                first = current
-            }
+            last.next = current
+            current.prev = last
             last = current
         }
         first.prev = last
@@ -49,12 +36,17 @@ class ChainGpp2
 
     void kill(int nth)
     {
+        def shout = nth
         def current = first
-        def shout = 1
-        while(current.next !== current)
+        for(; current.next !== current; current = current.next)
         {
-            shout = current.shout(shout, nth)
-            current = current.next
+            if (shout == nth) {
+                current.remove()
+                shout = 1
+            }
+            else {
+                shout++
+            }
         }
         first = current
     }
