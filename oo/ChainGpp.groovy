@@ -1,10 +1,12 @@
 @Typed package gpptest
 
+import sun.security.util.Debug
+
 class ChainGpp2
 {
     static class Person
     {
-        int count
+        final int count
         Person prev, next
 
         Person(int count)
@@ -22,13 +24,10 @@ class ChainGpp2
 
     ChainGpp2(int size)
     {
-        Person last = first = [0]
+        def last = (first = [0])
         for (int i = 1 ; i < size ; i++)
         {
-            Person current = [i]
-            last.next = current
-            current.prev = last
-            last = current
+            last = ((last.next = [i]).prev = last).next
         }
         first.prev = last
         last.next = first
@@ -40,12 +39,9 @@ class ChainGpp2
         def current = first
         for(; current.next !== current; current = current.next)
         {
-            if (shout == nth) {
+            if (shout++ == nth) {
                 current.remove()
                 shout = 1
-            }
-            else {
-                shout++
             }
         }
         first = current
