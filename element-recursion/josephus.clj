@@ -1,35 +1,27 @@
-;; contributed by Stuart Halloway
-;; This is not idiomatic Clojure, rather, a simple-minded post of the
-;; Java code, in the name of an apples-apples comparison.
-
-(import [java.util ArrayList LinkedList List ListIterator])
-
 (set! *warn-on-reflection* true)
+(set! *unchecked-math* true)
 
-(defn countoff
-  [^ListIterator ring ^LinkedList reset kth k]
-  (loop [ring ring
-         reset reset
-         kth (int kth)
-         k (int k)]
-    (if (.hasNext ring)
-      (do
-        (.next ring)
-        (if (not= k kth)
-          (recur ring reset kth (inc k))
-          (do
-            (.remove ring)
-            (recur ring reset kth (int 1)))))
-      (if (> (.nextIndex ring) 1)
-        (recur (.listIterator reset (int 0)) reset kth k)
-        (.previous ring)))))
-            
+;; N.B. referentially transparent and threadsafe even with internal
+;; use of mutation.
 (defn josephus
-  [n kth]
-  (let [soldiers (LinkedList.)]
-    (dotimes [i n]
-      (.add soldiers (inc i)))
-    (countoff (.listIterator soldiers) soldiers kth kth)))
+  [people nth]
+  (let [shout
+        (fn [^java.util.LinkedList people ^long n ^long counter]
+          (cond
+           (= (.size people) 1) (.get people 0)
+           (zero? counter) (do
+                             (.remove people 0)
+                             (recur people n (inc counter)))
+                 :else (let [counter (if (= counter (dec n))
+                                       0 (inc counter))
+                             f (.get people 0)]
+                         (.remove people 0)
+                         (.add people f)
+                         (recur people n counter))))
+        al (java.util.LinkedList.)]
+    (dotimes [x people]
+      (.add al (inc x)))
+   (shout al nth 0)))
 
 (defn run-iterations [iterations times]
   (dotimes [_ times]
@@ -40,5 +32,4 @@
             (println (float (/ (- end start) (* 1000 iterations))))))))
 
 (println (josephus 40 3))
-(run-iterations 100000 10)
-
+(run-iterations 1000000 10)
