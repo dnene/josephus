@@ -1,7 +1,5 @@
 @Typed package gpptest
 
-import sun.security.util.Debug
-
 class ChainGpp2
 {
     static class Person
@@ -15,8 +13,7 @@ class ChainGpp2
         }
 
         void remove() {
-            prev.next = next
-            next.prev = prev
+            (prev.next = next).prev = prev
         }
     }
 
@@ -36,8 +33,8 @@ class ChainGpp2
     void kill(int nth)
     {
         def shout = nth
-        def current = first
-        for(; current.next !== current; current = current.next)
+        def current = first.prev
+        for(; current !== (current = current.next); )
         {
             if (shout++ == nth) {
                 current.remove()
