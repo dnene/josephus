@@ -2,16 +2,16 @@
 $ python josephus.py
 26
 element recursion
-50.3187770844
-50.3241479397
-50.3240659237
-50.3192489147
-50.3268041611
-50.3255558014
-50.2993578911
-50.2927269936
-50.2895271778
-50.2902379036
+43.7426130772
+43.728605032
+43.7135281563
+43.7130749226
+43.7156639099
+43.7254951
+43.7201170921
+43.6938109398
+43.693862915
+43.6937048435
 """
 
 from collections import deque
@@ -19,7 +19,7 @@ from collections import deque
 def countoff(soldiers, kth, k):
    i = soldiers.popleft()
 
-   if len(soldiers):
+   if soldiers:
       if k != kth:
          k += 1
          soldiers.append(i)
